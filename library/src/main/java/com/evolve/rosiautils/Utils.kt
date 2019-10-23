@@ -2,6 +2,7 @@ package com.evolve.rosiautils
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -123,4 +124,31 @@ fun isValidContext(context: Context?): Boolean {
         }
     }
     return true
+}
+
+fun initPieGraph(progress: Float, pieGraph: PieGraph) {
+
+    val progressDifference = Math.abs(100 - progress) / 10
+    var totalProgress = progress / 10
+    if (progress > 100) {
+        totalProgress = 100.0f
+    }
+    pieGraph.removeSlices()
+    if (totalProgress == 0f) {
+        val slice = PieSlice()
+        slice.color = Color.parseColor("#FFF3F5F8")
+        slice.value = progressDifference
+        pieGraph.addSlice(slice)
+        pieGraph.thickness = 50
+    } else {
+        var slice = PieSlice()
+        slice.color = Color.parseColor("#FF1294F7")
+        slice.value = totalProgress
+        pieGraph.addSlice(slice)
+        slice = PieSlice()
+        slice.color = Color.parseColor("#FFF3F5F8")
+        slice.value = progressDifference
+        pieGraph.addSlice(slice)
+        pieGraph.thickness = 50
+    }
 }
