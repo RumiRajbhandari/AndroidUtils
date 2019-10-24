@@ -1,6 +1,8 @@
 # AndroidUtils
 A utility library for picture manger, dialog builder, pie chart, date and time selection view.
 
+![Utils Demo](media/video.gif)
+
 ## Installation
 Add the following dependency in build.gradle file of project level:
 ``` 
