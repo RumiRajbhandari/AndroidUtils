@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Connect to network"
+        android:text="@string/connect_to_network"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintStart_toStartOf="@+id/btn_take_photo"
         app:layout_constraintTop_toBottomOf="@id/btn_take_photo" />
 
@@ -21,7 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Take Photo"
+        android:text="@string/take_photo"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,7 +32,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Show Dialog"
+        android:text="@string/show_dialog"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintStart_toStartOf="@+id/btn_connect"
         app:layout_constraintTop_toBottomOf="@id/btn_connect" />
 
@@ -39,7 +42,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Date Time Picker"
+        android:text="@string/date_time_picker"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintStart_toStartOf="@+id/btn_show_dialog"
         app:layout_constraintTop_toBottomOf="@id/btn_show_dialog" />
 
@@ -48,7 +52,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Show pie"
+        android:text="@string/show_pie"
+        android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintStart_toStartOf="@+id/btn_date_time"
         app:layout_constraintTop_toBottomOf="@id/btn_date_time" />
 
