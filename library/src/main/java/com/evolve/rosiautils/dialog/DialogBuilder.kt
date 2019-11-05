@@ -1,12 +1,16 @@
-package com.evolve.rosiautils
+package com.evolve.rosiautils.dialog
 
 import android.app.AlertDialog
 import android.content.Context
 
-class DialogBuilder(var context: Context) {
+abstract class DialogBuilder {
     private var dialog: AlertDialog? = null
-    private val builder = AlertDialog.Builder(context)
+    private lateinit var context: Context
+    private val builder : AlertDialog.Builder by  lazy {  AlertDialog.Builder(context)}
 
+    internal fun setContext(context: Context){
+        this.context = context
+    }
     fun create(): DialogBuilder {
         dialog = builder.create()
         return this
@@ -27,12 +31,12 @@ class DialogBuilder(var context: Context) {
         return this
     }
 
-    fun setPositiveButton(buttonName: String, onPositiveButtonClicked: () -> Unit): DialogBuilder {
+    fun setPositiveButton(buttonName: String?, onPositiveButtonClicked: () -> Unit): DialogBuilder {
         builder.setPositiveButton(buttonName) { _, _ -> onPositiveButtonClicked() }
         return this
     }
 
-    fun setNegativeButton(buttonName: String, onNegativeButtonClicked: () -> Unit): DialogBuilder {
+    fun setNegativeButton(buttonName: String?, onNegativeButtonClicked: () -> Unit): DialogBuilder {
         builder.setNegativeButton(buttonName) { _, _ -> onNegativeButtonClicked() }
         return this
     }
