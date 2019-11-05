@@ -14,7 +14,7 @@ repositories {
 In app level build.gradle file add the following dependency:
 ```
 dependencies {
-    implementation 'com.github.RumiRajbhandari:AndroidUtils:0.0.2'
+    implementation 'com.github.RumiRajbhandari:AndroidUtils:0.2.0'
 }
 ```
 Also add the following code for Java 8 compatibility:
