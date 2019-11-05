@@ -7,4 +7,5 @@
     <string name="show_dialog">Show Dialog</string>
     <string name="date_time_picker">Date Time Picker</string>
     <string name="show_pie">Show pie</string>
+    <string name="show_biometric_prompt">Show biometric prompt</string>
 </resources>
