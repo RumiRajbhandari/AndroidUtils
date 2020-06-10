@@ -31,6 +31,8 @@ class ImageActivity : AppCompatActivity() {
                 openCamera()
             }
         }
+
+        startFragment()
     }
 
     private fun openCamera() {
@@ -44,13 +46,17 @@ class ImageActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+   /* override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (pictureManager.onRequestPermissionsResult(requestCode, permissions, grantResults)) openCamera()
+//        if (pictureManager.onRequestPermissionsResult(requestCode, permissions, grantResults)) openCamera()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         pictureManager.onActivityResult(requestCode, resultCode, data)
+    }*/
+
+    private fun startFragment(){
+        supportFragmentManager.beginTransaction().replace(R.id.frame_layout, ImageFragment()).commit()
     }
 }
