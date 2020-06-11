@@ -49,16 +49,16 @@ class PictureManager(private val host: Any) : PictureCallback {
         when (context) {
             is Activity -> context.startActivityForResult(intent, FROM_GALLERY)
             is androidx.fragment.app.Fragment -> context.startActivityForResult(
-                intent,
-                FROM_GALLERY
+                    intent,
+                    FROM_GALLERY
             )
         }
     }
 
     override fun startCameraIntent(
-        context: Context?,
-        fileName: String,
-        getSavedPath: (String) -> Unit
+            context: Context?,
+            fileName: String,
+            getSavedPath: (String) -> Unit
     ) {
         imagePath = getSavedPath
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -70,9 +70,9 @@ class PictureManager(private val host: Any) : PictureCallback {
                 } else {
                     println("provider is " + context.packageName)
                     FileProvider.getUriForFile(
-                        context,
-                        context.packageName + ".provider",
-                        imageFile
+                            context,
+                            context.packageName + ".provider",
+                            imageFile
                     )
                 }
                 intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
@@ -112,7 +112,7 @@ class PictureManager(private val host: Any) : PictureCallback {
 
                 val id = DocumentsContract.getDocumentId(uri)
                 val contentUri = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)!!
+                        Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)!!
                 )
 
                 return getDataColumn(context, contentUri, null, null)
@@ -183,8 +183,8 @@ class PictureManager(private val host: Any) : PictureCallback {
      * @return The value of the _data column, which is typically a file path.
      */
     private fun getDataColumn(
-        context: Context?, uri: Uri?, selection: String?,
-        selectionArgs: Array<String>?
+            context: Context?, uri: Uri?, selection: String?,
+            selectionArgs: Array<String>?
     ): String {
 
         var cursor: Cursor? = null
@@ -193,7 +193,7 @@ class PictureManager(private val host: Any) : PictureCallback {
 
         try {
             cursor =
-                context?.contentResolver?.query(uri!!, projection, selection, selectionArgs, null)
+                    context?.contentResolver?.query(uri!!, projection, selection, selectionArgs, null)
             var path: String? = null
             if (cursor != null && cursor.moveToFirst()) {
                 val columnIndex = cursor.getColumnIndexOrThrow(column)
@@ -216,7 +216,7 @@ class PictureManager(private val host: Any) : PictureCallback {
         var image: File? = null
         // Create an image file name
         val storageDir =
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) // for private folder
+                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) // for private folder
         val appDirectory = getDocumentPath(context)
         if (!appDirectory.exists()) {
             if (!appDirectory.mkdir()) return image
@@ -277,32 +277,31 @@ class PictureManager(private val host: Any) : PictureCallback {
 
     fun hasPermission(context: Context): Boolean {
         return if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
+                        context,
+                        Manifest.permission.CAMERA
+                ) != PackageManager.PERMISSION_GRANTED
         ) {
 
-            when (context) {
+            when (host) {
                 is Activity -> {
                     ActivityCompat.requestPermissions(
-                        context,
-                        arrayOf(
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ),
-                        PICK_FROM_CAMERA
+                            host,
+                            arrayOf(
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ),
+                            PICK_FROM_CAMERA
                     )
                     println("has permission form activity")
                 }
                 is androidx.fragment.app.Fragment -> {
                     println(" has permissin from fragment")
-                    ActivityCompat.requestPermissions(
-                        context.activity!!,
-                        arrayOf(
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ),
-                        PICK_FROM_CAMERA
+                    host.requestPermissions(
+                            arrayOf(
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            ),
+                            PICK_FROM_CAMERA
                     )
                 }
                 else -> println("inside else of has permission")
@@ -315,9 +314,9 @@ class PictureManager(private val host: Any) : PictureCallback {
     }
 
     fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
     ): Boolean {
         return (grantResults.isNotEmpty()
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
@@ -337,7 +336,7 @@ class PictureManager(private val host: Any) : PictureCallback {
             BitmapFactory.decodeStream(FileInputStream(file.absolutePath), null, options)
             // Calculate inSampleSize
             options.inSampleSize =
-                calculateInSampleSize(options, 720, 1280) //My device pixel resolution
+                    calculateInSampleSize(options, 720, 1280) //My device pixel resolution
             // Decode bitmap with inSampleSize set
             val bitmap = BitmapFactory.decodeFile(file.absolutePath, options)
             val rotatedBitmap = rotateBitmaps(bitmap = bitmap, imageFileLocation = imagePathName)
@@ -358,22 +357,22 @@ class PictureManager(private val host: Any) : PictureCallback {
     private fun rotateBitmaps(bitmap: Bitmap, imageFileLocation: String): Bitmap {
         val exifInterface = androidx.exifinterface.media.ExifInterface(imageFileLocation)
         val orientation = exifInterface.getAttributeInt(
-            androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION,
-            androidx.exifinterface.media.ExifInterface.ORIENTATION_UNDEFINED
+                androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION,
+                androidx.exifinterface.media.ExifInterface.ORIENTATION_UNDEFINED
         )
         val matrix = Matrix()
         when (orientation) {
             androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_90 -> matrix.setRotate(90f)
             androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_180 -> matrix.setRotate(
-                180f
+                    180f
             )
         }
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     private fun calculateInSampleSize(
-        ourOption: BitmapFactory.Options,
-        imageWidth: Int, imageHeight: Int
+            ourOption: BitmapFactory.Options,
+            imageWidth: Int, imageHeight: Int
     ): Int {
         val height = ourOption.outHeight
         val width = ourOption.outWidth
@@ -408,6 +407,7 @@ class PictureManager(private val host: Any) : PictureCallback {
 interface PictureCallback {
     fun startGalleryIntent(context: Context?, getSavedPath: (String) -> Unit)
     fun startCameraIntent(context: Context?, fileName: String = "", getSavedPath: (String) -> Unit)
+
     @Throws(Exception::class)
     fun getImagePathFromUri(context: Context, uri: Uri): String
 }
