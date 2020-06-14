@@ -1,6 +1,7 @@
 package com.evolve.rosiautils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -75,7 +76,7 @@ public class TimeSelectionView extends AppCompatEditText {
             cal.setTime(selectedDate);
 
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, hourOfDay, minute) -> {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), AlertDialog.THEME_HOLO_LIGHT, (view, hourOfDay, minute) -> {
             Calendar newDate = Calendar.getInstance();
             newDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
             newDate.set(Calendar.MINUTE, minute);
