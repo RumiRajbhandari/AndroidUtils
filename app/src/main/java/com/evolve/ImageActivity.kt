@@ -27,7 +27,7 @@ class ImageActivity : AppCompatActivity() {
         pictureManager = PictureManager(this)
 
         btn_take_photo.setOnClickListener {
-            if (pictureManager.hasPermission(this)) {
+            if (pictureManager.hasPermission()) {
                 openCamera()
             }
         }

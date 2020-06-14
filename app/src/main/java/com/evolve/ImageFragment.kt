@@ -23,18 +23,20 @@ class ImageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater,
-            R.layout.fragment_image, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_image, container, false
+        )
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         pictureManager = PictureManager(this)
-        pictureManager.hasPermission(this)
+        pictureManager.hasPermission()
         binding.btnTakePhotoFragment.setOnClickListener {
             context?.let {
-                if (pictureManager.hasPermission(it)) {
+                if (pictureManager.hasPermission()) {
                     openCamera()
                 }
             }
@@ -52,10 +54,19 @@ class ImageFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         println("on request permission res")
-        if (pictureManager.onRequestPermissionsResult(requestCode, permissions, grantResults)) openCamera()
+        if (pictureManager.onRequestPermissionsResult(
+                requestCode,
+                permissions,
+                grantResults
+            )
+        ) openCamera()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
