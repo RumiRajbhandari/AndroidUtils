@@ -79,7 +79,8 @@ public class DateSelectionView extends AppCompatEditText {
             selectedDate = newDate.getTime();
             setViewBasedOnSelectedDate();
         }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-
+        Calendar minDate=Calendar.getInstance();
+        datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis()-1000);
         datePickerDialog.show();
 
 
