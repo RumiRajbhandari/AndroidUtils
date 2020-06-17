@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_date_time_picker.*
 
 class DateTimePickerActivity : AppCompatActivity() {
 
@@ -14,5 +15,6 @@ class DateTimePickerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_date_time_picker)
+        date_selection_view2.setAllOwToPickPastDate(true)
     }
 }
