@@ -4,12 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,10 +27,13 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.content.ContextCompat;
 
 
-public class TimeSelectionView extends AppCompatEditText {
+public class TimeSelectionView extends AppCompatEditText implements TimePicker.OnTimeChangedListener {
     private Date selectedDate;
     private Activity activity;
     private Drawable drawable;
+    private int MAX;
+    private int MIN;
+    private Boolean shouldEnableTimeRange = false;
 
     public TimeSelectionView(Context context) {
         super(context);
@@ -50,7 +58,10 @@ public class TimeSelectionView extends AppCompatEditText {
         setCompoundDrawablePadding((int) getResources().getDimension(R.dimen.padding_small));
         setCompoundDrawablesWithIntrinsicBounds(null,
                 null, drawable, null);
-        this.setOnClickListener(v -> showDatePicker());
+        this.setOnClickListener(v -> {
+                    showTimePicker();
+                }
+        );
     }
 
     private void obtainStyledAttributes(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -69,23 +80,39 @@ public class TimeSelectionView extends AppCompatEditText {
         }
     }
 
-    private void showDatePicker() {
-        hideSoftKeyboard(this);
-        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-        if (selectedDate != null)
-            cal.setTime(selectedDate);
+    public void setMinMaxTime(Boolean shouldEnableTimeRange, int min, int max) {
+        this.shouldEnableTimeRange = shouldEnableTimeRange;
+        this.MIN = min;
+        this.MAX = max;
+    }
 
+    private void showTimePicker() {
+        hideSoftKeyboard(this);
+        Calendar cal = Calendar.getInstance(Locale.getDefault());
+        if (selectedDate != null) {
+            cal.setTime(selectedDate);
+        }
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), AlertDialog.THEME_HOLO_LIGHT, (view, hourOfDay, minute) -> {
-            Calendar newDate = Calendar.getInstance();
+            Calendar newDate = Calendar.getInstance(Locale.getDefault());
             newDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
             newDate.set(Calendar.MINUTE, minute);
             selectedDate = newDate.getTime();
             setViewBasedOnSelectedDate();
-        }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), false);
-
+        }, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false);
+        if (shouldEnableTimeRange) {
+            try {
+                Field TimePickerField = timePickerDialog.getClass().getDeclaredField("mTimePicker");
+                TimePickerField.setAccessible(true);
+                TimePicker timePicker = (TimePicker) TimePickerField.get(timePickerDialog);
+                if (timePicker != null) {
+                    timePicker.setOnTimeChangedListener(this);
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         timePickerDialog.show();
-
     }
 
     private void setViewBasedOnSelectedDate() {
@@ -131,4 +158,20 @@ public class TimeSelectionView extends AppCompatEditText {
         }
     }
 
+    @Override
+    public void onTimeChanged(TimePicker timePicker, int hourOfDay, int minute) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (hourOfDay < MIN) {
+                timePicker.setHour(MIN);
+            } else if (hourOfDay > MAX) {
+                timePicker.setHour(MAX);
+            }
+        } else {
+            if (hourOfDay < MIN) {
+                timePicker.setCurrentHour(MIN);
+            } else if (hourOfDay > MAX) {
+                timePicker.setCurrentHour(MAX);
+            }
+        }
+    }
 }
