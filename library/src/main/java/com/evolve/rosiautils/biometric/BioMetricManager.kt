@@ -1,9 +1,8 @@
 package com.evolve.rosiautils.biometric
-
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.hardware.biometrics.BiometricManager
+import android.hardware.biometrics.BiometricPrompt.BIOMETRIC_ERROR_NO_BIOMETRICS
 import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Handler
@@ -13,6 +12,7 @@ import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat
 import androidx.fragment.app.Fragment
@@ -29,14 +29,14 @@ import java.util.*
 import java.util.concurrent.Executor
 
 class BioMetricManager private constructor(private val host: Any) {
-    private var biometricCallback: BiometricCallback ?= null
+    private var biometricCallback: BiometricCallback? = null
     private val handler = Handler()
     private val executor = Executor { command -> handler.post(command) }
 
     private var context: Context = when (host) {
         is Activity -> host
-        is Fragment -> host.context!!
-        else -> throw Exception("Host either can be Activity or Fragment")
+        is Fragment -> host.requireContext()
+        else -> throw Exception("The host can be either activity or fragment only.")
     }
 
     companion object {
@@ -48,20 +48,21 @@ class BioMetricManager private constructor(private val host: Any) {
         }
     }
 
-    fun setCallback(biometricCallback: BiometricCallback?){
+    fun setCallback(biometricCallback: BiometricCallback?) {
         this.biometricCallback = biometricCallback
     }
 
     fun checkIfDeviceSupportsFingerPrint(): Boolean {
 
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            val bioMetricManager = context.getSystemService(BiometricManager::class.java)
-            if (bioMetricManager?.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val bioMetricManager = BiometricManager.from(context)
+            val canAuthenticate = bioMetricManager.canAuthenticate()
+            if (canAuthenticate == BIOMETRIC_ERROR_NO_BIOMETRICS || canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS)
                 return true
-            }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val fingerPrintManager =
-                context.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
+                context.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager?
+                    ?: return false
             if (fingerPrintManager.isHardwareDetected) {
                 return true
             }
@@ -71,15 +72,13 @@ class BioMetricManager private constructor(private val host: Any) {
 
     fun isFingerPrintAlreadyEnrolled(): Boolean {
         // Check whether the fingerprint can be used for authentication (Android M to P)
-        return if (Build.VERSION.SDK_INT < 29) {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             val fingerprintManagerCompat = FingerprintManagerCompat.from(context)
             fingerprintManagerCompat.hasEnrolledFingerprints()
-        } else {    // Check biometric manager (from Android Q)
-            val biometricManager =
-                context.getSystemService(BiometricManager::class.java)
-            if (biometricManager != null) {
-                biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
-            } else false
+        } else {
+            // Check biometric manager (from Android Q)
+            val biometricManager = BiometricManager.from(context)
+            biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
         }
     }
 
@@ -89,9 +88,8 @@ class BioMetricManager private constructor(private val host: Any) {
 
     private fun startFingerprintEnrollment() {
         when {
-            Build.VERSION.SDK_INT == Build.VERSION_CODES.P -> {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
                 val intent = Intent(Settings.ACTION_FINGERPRINT_ENROLL)
-
                 when (host) {
                     is Activity -> host.startActivityForResult(intent, BIOMETRIC_REQUEST_CODE)
                     is Fragment -> host.startActivityForResult(intent, BIOMETRIC_REQUEST_CODE)
@@ -99,7 +97,6 @@ class BioMetricManager private constructor(private val host: Any) {
             }
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
                 val intent = Intent(Settings.ACTION_SECURITY_SETTINGS)
-
                 when (host) {
                     is Activity -> host.startActivityForResult(intent, BIOMETRIC_REQUEST_CODE)
                     is Fragment -> host.startActivityForResult(intent, BIOMETRIC_REQUEST_CODE)
@@ -113,24 +110,26 @@ class BioMetricManager private constructor(private val host: Any) {
         }
     }
 
-
-    fun startBiometricPrompt(appTitle: String, appDescription: String){
+    fun showBiometricDialog(
+        title: String,
+        description: String,
+        negativeButtonName: String = "Dismiss"
+    ) {
         val signature: Signature?
         try {
             var keyPair: KeyPair? = null
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-               keyPair =  generateKeyPair()
+                keyPair = generateKeyPair()
             }
             keyToServer = Base64.encodeToString(keyPair?.public?.encoded, Base64.URL_SAFE)
             signature = initSignature()
-        }catch (e:Exception){
+        } catch (e: Exception) {
             throw RuntimeException(e)
         }
         signature?.let {
-            showBiometricPrompt(signature, appTitle, appDescription)
+            showBiometricPrompt(signature, title, description, negativeButtonName)
         }
     }
-
 
     @Throws(Exception::class)
     private fun initSignature(): Signature? {
@@ -158,7 +157,7 @@ class BioMetricManager private constructor(private val host: Any) {
         return null
     }
 
-    fun showDefaultDialog(title: String,message: String){
+    fun showDefaultDialog(title: String, message: String) {
         getDialogBuilder()
             .setTitle(title)
             .setMessage(message)
@@ -194,7 +193,7 @@ class BioMetricManager private constructor(private val host: Any) {
             .setUserAuthenticationRequired(true)
 
         // Generated keys will be invalidated if the biometric templates are added more to user device
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             builder.setInvalidatedByBiometricEnrollment(true)
         }
 
@@ -204,34 +203,40 @@ class BioMetricManager private constructor(private val host: Any) {
 
     private fun showBiometricPrompt(
         signature: Signature,
-        appTitle: String,
-        appDescription: String
+        title: String,
+        description: String,
+        negativeButtonName: String = "Dismiss"
     ) {
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(appTitle)
-            .setDescription(appDescription)
-            .setNegativeButtonText("dismiss")
+            .setTitle(title)
+            .setDescription(description)
+            .setNegativeButtonText(negativeButtonName)
             .build()
 
         val biometricPrompt = BiometricPrompt(
             context as FragmentActivity, executor,
             object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int,
-                                                   errString: CharSequence) {
+                override fun onAuthenticationError(
+                    errorCode: Int,
+                    errString: CharSequence
+                ) {
                     super.onAuthenticationError(errorCode, errString)
-                    biometricCallback?.onAuthenticationError(errorCode,errString)
+                    biometricCallback?.onAuthenticationError(errorCode, errString)
                 }
 
                 override fun onAuthenticationSucceeded(
-                    result: BiometricPrompt.AuthenticationResult) {
+                    result: BiometricPrompt.AuthenticationResult
+                ) {
                     super.onAuthenticationSucceeded(result)
                     val authenticatedCryptoObject: BiometricPrompt.CryptoObject? =
                         result.cryptoObject
                     // User has verified the signature, cipher, or message
                     // authentication code (MAC) associated with the crypto object,
                     // so you can use it in your app's crypto-driven workflows.
-                    biometricCallback?.onAuthenticationSucceeded(authenticatedCryptoObject,
-                        keyToServer)
+                    biometricCallback?.onAuthenticationSucceeded(
+                        authenticatedCryptoObject,
+                        keyToServer
+                    )
                 }
 
                 override fun onAuthenticationFailed() {
@@ -241,19 +246,19 @@ class BioMetricManager private constructor(private val host: Any) {
             })
 
         // Displays the "log in" prompt.
-        biometricPrompt.authenticate(promptInfo,BiometricPrompt.CryptoObject(signature))
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(signature))
     }
 
-
-    interface BiometricCallback{
+    interface BiometricCallback {
         fun onAuthenticationSucceeded(
             authenticatedCryptoObject: BiometricPrompt.CryptoObject?,
             keyToServer: String
         )
+
         fun onAuthenticationFailed()
-        fun onAuthenticationError(errorCode: Int,
-                                  errString: CharSequence)
+        fun onAuthenticationError(
+            errorCode: Int,
+            errString: CharSequence
+        )
     }
-
-
 }

@@ -1,5 +1,8 @@
 package com.evolve
 
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -114,7 +117,7 @@ class MainActivity : AppCompatActivity(), BioMetricManager.BiometricCallback {
                     .setMessage("Next time, would you like to login faster using your fingerprint?")
                     .setCancelable()
                     .setPositiveButton("Yes") {
-                        bioMetricManager?.startBiometricPrompt("Android Utils","Please put your finger on your fingerprint sensor in order to validate")
+                        bioMetricManager?.showBiometricDialog("Android Utils","Please put your finger on your fingerprint sensor in order to validate")
                     }
                     .setNegativeButton("No") {
                         dialogBuilder.dismiss()
@@ -122,6 +125,21 @@ class MainActivity : AppCompatActivity(), BioMetricManager.BiometricCallback {
                     .setCancelable(false)
                     .create()
                     .show()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == BioMetricManager.BIOMETRIC_REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (resultCode == Activity.RESULT_FIRST_USER) {
+                    showBiometricDialog()
+                }
+            } else {
+                if (resultCode == Activity.RESULT_OK) {
+                    showBiometricDialog()
+                }
+            }
         }
     }
 }
