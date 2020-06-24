@@ -64,9 +64,9 @@ class MainActivity : AppCompatActivity(), BioMetricManager.BiometricCallback {
                 showBiometricDialog()
             } else {
                 // You can create your own dialog or do what ever you want
-                // and call bioMetricManager?.startFingerprintEnrollment(this)
-                // instead of calling showDefaultDialog function
-                bioMetricManager?.showDefaultDialog( "Android Utils", "Your device supports fingerprint authentication. Would you like to setup it for faster login?")
+                // and call bioMetricManager?.startBiometricEnrollment()
+                // instead of calling showBiometricEnrollmentDialog function
+                bioMetricManager?.showBiometricEnrollmentDialog( "Android Utils", "Your device supports fingerprint authentication. Would you like to setup it for faster login?")
             }
         } else {
             Toast.makeText(this, "Biometric not supported", Toast.LENGTH_SHORT).show()

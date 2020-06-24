@@ -1,4 +1,5 @@
 package com.evolve.rosiautils.biometric
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -86,7 +87,7 @@ class BioMetricManager private constructor(private val host: Any) {
         return DialogProvider.getInstance(context)
     }
 
-    private fun startFingerprintEnrollment() {
+    fun startBiometricEnrollment() {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> {
                 val intent = Intent(Settings.ACTION_FINGERPRINT_ENROLL)
@@ -157,13 +158,13 @@ class BioMetricManager private constructor(private val host: Any) {
         return null
     }
 
-    fun showDefaultDialog(title: String, message: String) {
+    fun showBiometricEnrollmentDialog(title: String, message: String) {
         getDialogBuilder()
             .setTitle(title)
             .setMessage(message)
             .setCancelable()
             .setPositiveButton("Ok") {
-                this.startFingerprintEnrollment()
+                this.startBiometricEnrollment()
             }
             .setNegativeButton("Cancel") {
                 getDialogBuilder().dismiss()
