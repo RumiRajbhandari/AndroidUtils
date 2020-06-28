@@ -6,12 +6,12 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.biometric.BiometricPrompt
 import com.evolve.rosiautils.dialog.DialogBuilder
 import com.evolve.rosiautils.dialog.DialogProvider
 import com.evolve.rosiautils.TYPE_ERROR
 import com.evolve.rosiautils.TYPE_SUCCESS
 import com.evolve.rosiautils.biometric.BioMetricManager
+import com.evolve.rosiautils.biometric.BiometricCryptoObject
 import com.evolve.rosiautils.checkNetworkAvailability
 import com.evolve.rosiautils.showToast
 import kotlinx.android.synthetic.main.activity_main.*
@@ -74,16 +74,14 @@ class MainActivity : AppCompatActivity(), BioMetricManager.BiometricCallback {
     }
 
     override fun onAuthenticationSucceeded(
-        authenticatedCryptoObject: BiometricPrompt.CryptoObject?,
+        cryptoObject: BiometricCryptoObject,
         keyToServer: String
     ) {
         Toast.makeText(this, "Authentication Success", Toast.LENGTH_SHORT).show()
-
     }
 
     override fun onAuthenticationFailed() {
         Toast.makeText(this, "Authentication Failed", Toast.LENGTH_SHORT).show()
-
     }
 
     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {

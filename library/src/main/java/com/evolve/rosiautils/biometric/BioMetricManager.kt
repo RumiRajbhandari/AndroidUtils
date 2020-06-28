@@ -234,8 +234,13 @@ class BioMetricManager private constructor(private val host: Any) {
                     // User has verified the signature, cipher, or message
                     // authentication code (MAC) associated with the crypto object,
                     // so you can use it in your app's crypto-driven workflows.
+                    val biometricCryptoObject = BiometricCryptoObject(
+                        mSignature = authenticatedCryptoObject?.signature,
+                        mCipher = authenticatedCryptoObject?.cipher,
+                        mMac = authenticatedCryptoObject?.mac
+                    )
                     biometricCallback?.onAuthenticationSucceeded(
-                        authenticatedCryptoObject,
+                        biometricCryptoObject,
                         keyToServer
                     )
                 }
@@ -252,7 +257,7 @@ class BioMetricManager private constructor(private val host: Any) {
 
     interface BiometricCallback {
         fun onAuthenticationSucceeded(
-            authenticatedCryptoObject: BiometricPrompt.CryptoObject?,
+            cryptoObject: BiometricCryptoObject,
             keyToServer: String
         )
 
