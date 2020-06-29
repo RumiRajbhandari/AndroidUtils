@@ -6,14 +6,11 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.evolve.rosiautils.*
 import com.evolve.rosiautils.dialog.DialogBuilder
 import com.evolve.rosiautils.dialog.DialogProvider
-import com.evolve.rosiautils.TYPE_ERROR
-import com.evolve.rosiautils.TYPE_SUCCESS
 import com.evolve.rosiautils.biometric.BioMetricManager
 import com.evolve.rosiautils.biometric.BiometricCryptoObject
-import com.evolve.rosiautils.checkNetworkAvailability
-import com.evolve.rosiautils.showToast
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BioMetricManager.BiometricCallback {
@@ -66,7 +63,10 @@ class MainActivity : AppCompatActivity(), BioMetricManager.BiometricCallback {
                 // You can create your own dialog or do what ever you want
                 // and call bioMetricManager?.startBiometricEnrollment()
                 // instead of calling showBiometricEnrollmentDialog function
-                bioMetricManager?.showBiometricEnrollmentDialog( "Android Utils", "Your device supports fingerprint authentication. Would you like to setup it for faster login?")
+                bioMetricManager?.showBiometricEnrollmentDialog( "Android Utils", "Your device supports fingerprint authentication. Would you like to setup it for faster login?",
+                    onNegativeButtonClicked = {
+                        showToast("Negative button clicked", TYPE_INFO)
+                    })
             }
         } else {
             Toast.makeText(this, "Biometric not supported", Toast.LENGTH_SHORT).show()

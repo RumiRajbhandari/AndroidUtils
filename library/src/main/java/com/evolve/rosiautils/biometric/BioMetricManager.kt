@@ -158,7 +158,11 @@ class BioMetricManager private constructor(private val host: Any) {
         return null
     }
 
-    fun showBiometricEnrollmentDialog(title: String, message: String) {
+    fun showBiometricEnrollmentDialog(
+        title: String,
+        message: String,
+        onNegativeButtonClicked: () -> Unit
+    ) {
         getDialogBuilder()
             .setTitle(title)
             .setMessage(message)
@@ -167,6 +171,7 @@ class BioMetricManager private constructor(private val host: Any) {
                 this.startBiometricEnrollment()
             }
             .setNegativeButton("Cancel") {
+                onNegativeButtonClicked()
                 getDialogBuilder().dismiss()
             }
             .setCancelable(false)
