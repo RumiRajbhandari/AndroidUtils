@@ -16,6 +16,9 @@ class DateTimePickerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_date_time_picker)
         date_selection_view2.setAllOwToPickPastDate(true)
+        btn_reset_date.setOnClickListener {
+            date_selection_view2.resetToCurrentDate()
+        }
         time_selection_view2.setMinMaxTime(true, 9, 17)
     }
 }

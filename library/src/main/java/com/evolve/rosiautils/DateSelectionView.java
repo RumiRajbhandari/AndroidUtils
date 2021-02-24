@@ -26,6 +26,7 @@ public class DateSelectionView extends AppCompatEditText {
     private Activity activity;
     private Drawable drawable;
     private Boolean allOwToPickPastDate = false;
+    private DatePickerDialog datePickerDialog;
 
     public DateSelectionView(Context context) {
         super(context);
@@ -74,7 +75,7 @@ public class DateSelectionView extends AppCompatEditText {
         Calendar cal = Calendar.getInstance(TimeZone.getDefault());
         if (selectedDate != null)
             cal.setTime(selectedDate);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year, monthOfYear, dayOfMonth) -> {
+         datePickerDialog = new DatePickerDialog(getContext(), (view, year, monthOfYear, dayOfMonth) -> {
             Calendar newDate = Calendar.getInstance();
             newDate.set(year, monthOfYear, dayOfMonth);
             selectedDate = newDate.getTime();
@@ -83,9 +84,15 @@ public class DateSelectionView extends AppCompatEditText {
         Calendar minDate = Calendar.getInstance();
         if (!allOwToPickPastDate)
             datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis() - 1000);
-        datePickerDialog.show();
+           datePickerDialog.show();
+    }
 
-
+    public void resetToCurrentDate() {
+        if (datePickerDialog != null) {
+            Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+            cal.setTime(new Date());
+            selectedDate = cal.getTime();
+        }
     }
 
     public void setAllOwToPickPastDate(Boolean allOwToPickPastDate) {

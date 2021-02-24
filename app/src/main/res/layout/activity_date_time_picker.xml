@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.evolve.DateTimePickerActivity">
 
     <com.evolve.rosiautils.TimeSelectionView
@@ -39,6 +40,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/timeSelectionView"/>
 
+    <Button
+        android:id="@+id/btn_reset_date"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="Reset Date"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"/>
+
     <com.evolve.rosiautils.TimeSelectionView
         android:id="@+id/time_selection_view2"
         android:layout_width="wrap_content"
@@ -50,4 +59,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/date_selection_view2"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
