@@ -10,8 +10,6 @@ import com.evolve.rosiautils.TYPE_SUCCESS
 import com.evolve.rosiautils.loadImage
 import com.evolve.rosiautils.showToast
 import kotlinx.android.synthetic.main.activity_image.*
-import kotlinx.android.synthetic.main.activity_image.btn_take_photo
-import kotlinx.android.synthetic.main.activity_main.*
 
 class ImageActivity : AppCompatActivity() {
 
@@ -34,7 +32,7 @@ class ImageActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        pictureManager.startCameraIntent(this) { imgPath ->
+        pictureManager.startCameraIntent(this, openFrontCamera = true) { imgPath ->
             loadImage(image, imgPath) {
                 if (!it) {
                     showToast("something went wrong", TYPE_ERROR)
