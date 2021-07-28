@@ -60,8 +60,10 @@ public class DateSelectionView extends AppCompatEditText {
             TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.EdittextAttribute, defStyleAttr, 0);
             try {
                 // Resources$NotFoundException if vector image
-                int drawableResId = typedArray.getResourceId(R.styleable.EdittextAttribute_customDrawable, -1);
-                drawable = AppCompatResources.getDrawable(context, drawableResId);
+                if (typedArray.getBoolean(R.styleable.EdittextAttribute_displayDrawable, true)) {
+                    int drawableResId = typedArray.getResourceId(R.styleable.EdittextAttribute_customDrawable, 0);
+                    drawable = AppCompatResources.getDrawable(context, drawableResId);
+                }
             } catch (Exception e) {
                 drawable = ContextCompat.getDrawable(context, R.drawable.ic_menu_today_grey_compat);
             } finally {
@@ -75,7 +77,7 @@ public class DateSelectionView extends AppCompatEditText {
         Calendar cal = Calendar.getInstance(TimeZone.getDefault());
         if (selectedDate != null)
             cal.setTime(selectedDate);
-         datePickerDialog = new DatePickerDialog(getContext(), (view, year, monthOfYear, dayOfMonth) -> {
+        datePickerDialog = new DatePickerDialog(getContext(), (view, year, monthOfYear, dayOfMonth) -> {
             Calendar newDate = Calendar.getInstance();
             newDate.set(year, monthOfYear, dayOfMonth);
             selectedDate = newDate.getTime();
@@ -84,7 +86,7 @@ public class DateSelectionView extends AppCompatEditText {
         Calendar minDate = Calendar.getInstance();
         if (!allOwToPickPastDate)
             datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis() - 1000);
-           datePickerDialog.show();
+        datePickerDialog.show();
     }
 
     public void resetToCurrentDate() {

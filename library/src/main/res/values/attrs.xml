@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="EdittextAttribute">
         <attr name="customDrawable" format="reference" />
+        <attr name="displayDrawable" format="boolean" />
     </declare-styleable>
 </resources>

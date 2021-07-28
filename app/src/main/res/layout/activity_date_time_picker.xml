@@ -36,6 +36,7 @@
         android:layout_marginTop="24dp"
         android:text="@string/mm_dd_yyyy"
         app:customDrawable="@drawable/ic_notification_compat"
+        app:displayDrawable="true"
         style="@style/edit_text_style_order"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/timeSelectionView"/>
