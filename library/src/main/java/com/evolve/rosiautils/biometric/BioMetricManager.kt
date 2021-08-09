@@ -7,6 +7,7 @@ import android.hardware.biometrics.BiometricPrompt.BIOMETRIC_ERROR_NO_BIOMETRICS
 import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -31,7 +32,7 @@ import java.util.concurrent.Executor
 
 class BioMetricManager private constructor(private val host: Any) {
     private var biometricCallback: BiometricCallback? = null
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
     private val executor = Executor { command -> handler.post(command) }
 
     private var context: Context = when (host) {

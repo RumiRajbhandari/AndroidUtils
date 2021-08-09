@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "com.evolve.testutils"
+        applicationId "com.evolve.androidutils"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1

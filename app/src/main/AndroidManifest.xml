@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PieActivity"></activity>
+        <activity android:name=".PieActivity"/>
         <activity android:name=".DateTimePickerActivity" />
         <activity android:name=".ImageActivity" />
         <activity android:name=".MainActivity">
@@ -22,7 +22,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.evolve.rosiautils.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
