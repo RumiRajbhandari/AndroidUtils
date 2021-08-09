@@ -129,7 +129,7 @@ class PictureManager2(private val host: Any) {
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == AppCompatActivity.RESULT_OK) {
+        if (resultCode != AppCompatActivity.RESULT_CANCELED) {
             if (requestCode == FROM_CAMERA) {
                 imagePathListener?.let {
                     it(currentPhotoPath)
