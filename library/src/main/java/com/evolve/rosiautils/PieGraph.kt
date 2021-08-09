@@ -164,7 +164,10 @@ class PieGraph : View {
 
             for ((count, slice) in this.slices.withIndex()) {
                 val r = Region()
-                r.setPath(slice.path, slice.region)
+                if (slice.path != null && slice.region != null) {
+                    r.setPath(slice.path!!, slice.region!!)
+                }
+
                 if (r.contains(point.x, point.y) && event.action == MotionEvent.ACTION_DOWN) {
                     indexSelected = count
                 } else if (event.action == MotionEvent.ACTION_UP) {

@@ -83,7 +83,7 @@ class PictureManager2(private val host: Any) {
         photoFile?.also {
             val photoURI: Uri = FileProvider.getUriForFile(
                 context,
-                "${BuildConfig.LIBRARY_PACKAGE_NAME}.fileprovider",
+                "${context.packageName}.provider",
                 it
             )
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
