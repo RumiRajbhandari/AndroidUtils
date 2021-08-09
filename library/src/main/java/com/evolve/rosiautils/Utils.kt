@@ -4,16 +4,20 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.media.ExifInterface
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.view.Gravity
+import android.webkit.URLUtil
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
@@ -81,6 +85,42 @@ fun loadImage(imageView: ImageView, url: String, imageLoadedListener: (success: 
         .apply(requestOptions)
         .listener(target)
         .into(imageView)
+}
+
+fun loadImage(imageView: ImageView, path: String?) {
+    if (path.isNullOrEmpty())
+        return
+    if (URLUtil.isHttpsUrl(path)) {
+        Glide.with(imageView.context).load(path).into(imageView)
+        return
+    }
+    Glide.with(imageView.context)
+        .load(path).let { request ->
+            val rotation = getRotation(Uri.parse(path))
+            rotation?.let {
+                request.transform(rotation)
+            }.orElse {
+                request
+            }
+        }.into(imageView)
+}
+
+private fun getOrientation(uri: Uri): Int {
+    val ei = ExifInterface(uri.path!!)
+    return ei.getAttributeInt(
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_UNDEFINED
+    )
+}
+
+private fun getRotation(uri: Uri): Rotate? {
+    return when (getOrientation(uri)) {
+        ExifInterface.ORIENTATION_ROTATE_90 -> Rotate(90)
+        ExifInterface.ORIENTATION_ROTATE_180 -> Rotate(180)
+        ExifInterface.ORIENTATION_ROTATE_270 -> Rotate(270)
+        ExifInterface.ORIENTATION_NORMAL -> null
+        else -> null
+    }
 }
 
 fun getCurrentDateTime(): String {
@@ -151,4 +191,8 @@ fun initPieGraph(progress: Float, pieGraph: PieGraph) {
         pieGraph.addSlice(slice)
         pieGraph.thickness = 50
     }
+}
+
+internal inline fun <R> R?.orElse(block: () -> R): R {
+    return this ?: block()
 }

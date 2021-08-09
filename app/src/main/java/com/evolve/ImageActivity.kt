@@ -4,16 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.evolve.rosiautils.PictureManager
-import com.evolve.rosiautils.TYPE_ERROR
-import com.evolve.rosiautils.TYPE_SUCCESS
-import com.evolve.rosiautils.loadImage
-import com.evolve.rosiautils.showToast
+import com.evolve.rosiautils.*
 import kotlinx.android.synthetic.main.activity_image.*
 
 class ImageActivity : AppCompatActivity() {
 
-    private lateinit var pictureManager: PictureManager
+    private lateinit var pictureManager: PictureManager2
 
     companion object {
         fun getIntent(context: Context) = Intent(context, ImageActivity::class.java)
@@ -22,23 +18,18 @@ class ImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
-        pictureManager = PictureManager(this)
+        pictureManager = PictureManager2(this)
 
         btn_take_photo.setOnClickListener {
-            if (pictureManager.hasPermission(this)) {
+            if (pictureManager.hasPermission()) {
                 openCamera()
             }
         }
     }
 
     private fun openCamera() {
-        pictureManager.startCameraIntent(this, openFrontCamera = true) { imgPath ->
-            loadImage(image, imgPath) {
-                if (!it) {
-                    showToast("something went wrong", TYPE_ERROR)
-                } else
-                    showToast("success", TYPE_SUCCESS)
-            }
+        pictureManager.dispatchTakePictureIntent( openFrontCamera = true) { imgPath ->
+            loadImage(image, imgPath)
         }
     }
 
