@@ -30,6 +30,7 @@ import kotlin.math.roundToInt
  * Created by krishna on 4/10/18.
  */
 
+@Deprecated("Use PictureManager2")
 class PictureManager(private val host: Any) : PictureCallback {
     private var cameraImagePath: String? = null
     var context: Context = when (host) {
