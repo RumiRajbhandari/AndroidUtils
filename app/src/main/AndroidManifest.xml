@@ -11,7 +11,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".PieActivity"/>
         <activity android:name=".DateTimePickerActivity" />
-        <activity android:name=".ImageActivity" />
+        <activity android:name=".ImageActivity"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

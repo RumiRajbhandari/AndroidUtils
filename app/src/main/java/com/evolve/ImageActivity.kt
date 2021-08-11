@@ -28,7 +28,7 @@ class ImageActivity : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        pictureManager.dispatchTakePictureIntent( openFrontCamera = true) { imgPath ->
+        pictureManager.dispatchTakePictureIntent( openFrontCamera = false) { imgPath ->
             loadImage(image, imgPath)
         }
     }
