@@ -9,7 +9,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 
 @GlideModule
-class AndroidUtilsGlideModule : AppGlideModule() {
+internal class AndroidUtilsGlideModule : AppGlideModule() {
 
     override fun applyOptions(context: Context, builder: GlideBuilder) {
         super.applyOptions(context, builder)
