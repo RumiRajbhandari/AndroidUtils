@@ -21,9 +21,12 @@ import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 import java.util.*
-import kotlin.jvm.Throws
 
 /**
  * Created by Nabin on 4/25/2021.
@@ -39,6 +42,10 @@ class PictureManager2(private val host: Any) {
     private lateinit var currentPhotoPath: String
     private var imagePathListener: ((String) -> Unit?)? = null
 
+    fun isImagePathListenerNull(): Boolean {
+        return imagePathListener == null
+    }
+
     fun setListener(imagePathListener: ((String) -> Unit?)?) {
         this.imagePathListener = imagePathListener
     }
@@ -52,7 +59,7 @@ class PictureManager2(private val host: Any) {
         this.imagePathListener = imagePathListener
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (openFrontCamera && hasFrontCamera()) {
-        // TODO test why facing front camera is not working? Why Why Why ????????????
+            // TODO test why facing front camera is not working? Why Why Why ????????????
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O -> {
                     takePictureIntent.putExtra(
@@ -104,7 +111,6 @@ class PictureManager2(private val host: Any) {
         return context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)
     }
 
-    //    TODO find how to create file in optimized way
     @Throws(IOException::class)
     private fun createImageFile(fileName: String): File {
         // Create an image file name
@@ -132,9 +138,13 @@ class PictureManager2(private val host: Any) {
         if (resultCode != AppCompatActivity.RESULT_CANCELED) {
             if (requestCode == FROM_CAMERA) {
                 imagePathListener?.let {
-                    it(currentPhotoPath)
+                    if (::currentPhotoPath.isInitialized) {
+                        it(currentPhotoPath)
+                    } else {
+                        throw ImagePathNullException("Image path has not been initialized")
+                    }
                 }.orElse {
-                    throw Exception("Image Listener is null")
+                    throw ImageListenerNullException("Image Listener is null")
                 }
             }
         }
